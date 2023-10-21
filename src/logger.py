@@ -1,38 +1,38 @@
 # -*- coding: utf-8 -*-
-"""Configures logging."""
-
 import os
 import sys
 import logging
 
-# Set up logging
-logger = logging.getLogger()
-logger.setLevel(logging.DEBUG if os.environ.get("NOTE_PY_DEBUG") else logging.DEBUG)
+def setupLogging():
+    """Set up logging"""
+    logger = logging.getLogger()
 
-# Create a console handler and set the level
-ch = logging.StreamHandler(sys.stdout)
-ch.setLevel(logging.DEBUG)
+    # Set log level based on environment variable, default to INFO
+    logLevelStr = os.environ.get("NOTES_PY_LOGGING_LEVEL", "INFO")
+    logLevel = getattr(logging, logLevelStr, logging.INFO)
 
-# Create a formatter and set the formatter for the handler
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-ch.setFormatter(formatter)
+    logger.setLevel(logLevel)
 
-# Add the handler to the logger
-logger.addHandler(ch)
-
-# If Check NOTE_PY_LOGGING
-if not os.environ.get("NOTE_PY_LOGGING"):
-    logs_directory = "logs"
-    os.makedirs(logs_directory, exist_ok=True)
-
-    log_file = os.path.join(logs_directory, "notes.py.log")
+    # Create a formatter
+    formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
     # Create a file handler
-    fh = logging.FileHandler(log_file)
-    fh.setLevel(logging.INFO)  # Log info-level messages to the file
-
-    # Set the formatter for the file handler
-    fh.setFormatter(formatter)
+    logsDirectory = "logs"
+    os.makedirs(logsDirectory, exist_ok=True)
+    logFile = os.path.join(logsDirectory, "notes.py.log")
+    fileHandler = logging.FileHandler(logFile)
+    fileHandler.setLevel(logLevel)
+    fileHandler.setFormatter(formatter)
 
     # Add the file handler to the logger
-    logger.addHandler(fh)
+    logger.addHandler(fileHandler)
+
+    # Check if the environment variable 'NOTES_PY_LOGGING' is set to 'stdout'
+    if os.environ.get("NOTES_PY_LOGGING") == "stdout":
+        # Create a console handler and set the level
+        consoleHandler = logging.StreamHandler(sys.stdout)
+        consoleHandler.setLevel(logLevel)
+        consoleHandler.setFormatter(formatter)
+
+        # Add the console handler to the logger
+        logger.addHandler(consoleHandler)

@@ -2,7 +2,7 @@
 """This models contains functions that get executed based on command line arguments"""
 
 from logging import getLogger
-from pathlib import Path
+import os
 
 import database as db
 import utils
@@ -28,11 +28,15 @@ def createNote():
 
 def editNote():
     """Edit an existing note."""
-    import os
-    selector = widgets.Selector(os.listdir('/'))
-    selector.run()
-    print(f"Selected path = {selector.selected}")
-    log.debug("Editing an existing note...")
+    log.info("Editing note...")
+    baseTopic = db.Topic.get(db.Topic.id == 1)
+    note = widgets.selectNote(baseTopic)
+    if not note:
+        return
+    filePath = utils.getRawDirPath() + note.filePath
+    log.debug(f"Resolved path for note ={filePath}")
+    utils.openFile(str(filePath))
+    utils.convertRawFile(str(note.filePath))
 
 
 def createTopic():
@@ -59,5 +63,6 @@ def editTopic():
     pTopic, selectedTopic = widgets.selectTopic(baseTopic)
     if not selectedTopic:
         return
-    filePath = Path(utils.getRawDirPath()) / Path(str(selectedTopic.filePath)) / Path('index.md')
+    filePath = os.path.join(utils.getRawDirPath(), selectedTopic.filePath, 'index.md')
     utils.openFile(str(filePath))
+    utils.convertRawFile(str(filePath))

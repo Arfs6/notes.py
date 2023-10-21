@@ -4,16 +4,14 @@
 
 from logging import getLogger
 
-import logger
-from arguments import getArgs
-import actions
-
 
 log = getLogger('notes.py')
 
 
 def execute():
     """Parse command line argument and execute the appropriate action."""
+    from arguments import getArgs
+    import actions
     args = getArgs()
     match args.action:
         case 'create':
@@ -31,6 +29,8 @@ def run():
     """Entry point of notes.py
     it does setup actions, executes user command and then clean up.
     """
+    import logger
+    logger.setupLogging()
     import database as db
     db.setup()
     execute() 

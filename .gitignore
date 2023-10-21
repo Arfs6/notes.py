@@ -161,3 +161,6 @@ cython_debug/
 src/init.py
 src/logs
 src/notes.py.db
+src/outputs
+src/raw
+src/todo

@@ -8,6 +8,7 @@ import re
 from subprocess import run
 from typing import Optional
 
+import converter
 from database import Topic, Note
 import init as config
 
@@ -49,16 +50,27 @@ def createTopic(parentTopic: Topic):
     log.info("Creating a new topic...")
     newTopicName = promptUser("Enter topic name. Type ctrl+c to cancel: ")
     if not newTopicName: return
-    newTopicFilePath = Path(str(parentTopic.filePath)) / Path(stripSpecialCharacters(newTopicName))
+    newTopicFilePath = os.path.join(parentTopic.filePath, stripSpecialCharacters(newTopicName))
     newTopic = Topic(filePath=newTopicFilePath, name=newTopicName, parent=parentTopic.id)
+    relPath = newTopicFilePath[1:]
+    os.makedirs(os.path.join(getRawDirPath(), relPath), exist_ok=True)
     newTopic.save()
 
 
-def getRawDirPath():
+def getRawDirPath() -> str:
     """Returns the root directory where the raw files of notes.py are saved."""
-    return Path(os.getcwd()) / Path('raw')
+    path = os.path.join(os.getcwd(), 'raw')
+    if not os.path.exists(path):
+        os.makedirs(path)
+    return path
 
 
+def getHTMLDir() -> Path:
+    """Returns the directory to store html outputs."""
+    path = os.path.join(os.getcwd(), 'outputs', 'html')
+    if not os.path.exists(path):
+        os.makedirs(path)
+    return path
 def openFile(path: str):
     """Opens the specified file in a text editor.
     parameters:
@@ -77,7 +89,33 @@ def createNote(topic: Topic):
     if not noteName: return
     ext = promptUser("Which type of note is this? e.g. tex for latex. Type ctrl+c to cancel: ")
     if not ext: return
-    note = Note(title=noteName)
+    note = Note()
     filePath = Path(topic.filePath) / Path(stripSpecialCharacters(noteName))
     note.filePath = str(filePath.with_suffix('.' + ext))
+# todo: Make sure filePath is truely unique or the above code will raise an exception.
+    note.title = noteName
     note.topic = topic.id
+    note.save()
+
+
+def convertRawFile(path: str):
+    """Converts a note to HTML."""
+    rawFilePath = Path(os.path.join(getRawDirPath(), path[1:]))
+    with open(rawFilePath) as rawFile:
+        raw = rawFile.read()
+    match rawFilePath.suffix:
+        case '.md':
+            export = converter.md2HTML(raw)
+        case '.tex':
+            export = converter.tex2HTML(raw)
+        case _:
+            export = raw
+
+    exportPath = Path(os.path.join(getHTMLDir(), path[1:]))  # remove leading slash
+    exportPath = exportPath.with_suffix('.html')
+    log.debug(f"Export file path is {exportPath}")
+    if not os.path.exists(exportPath.parent):
+        # Create it!
+        os.makedirs(exportPath.parent)
+    with open(exportPath, 'w') as exportFile:
+        exportFile.write(export)

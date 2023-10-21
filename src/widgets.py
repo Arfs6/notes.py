@@ -4,7 +4,7 @@ from logging import getLogger
 import urwid
 from typing import Optional, TYPE_CHECKING, Any
 if TYPE_CHECKING:
-    from database import Topic
+    from database import Topic, Note
 
 
 log = getLogger('widgets')
@@ -89,7 +89,7 @@ def selectTopic(topic: 'Topic') -> tuple[Optional['Topic'], Optional['Topic']]:
         selector = TopicSelector([t.name for t in children], children)
         selector.run()
         if selector.next:
-            log.debug("Parent topic is now:", pTopic)
+            log.debug(f"Parent topic is now: {pTopic}")
             pTopic = selector.selected
         else:
             break
@@ -97,3 +97,23 @@ def selectTopic(topic: 'Topic') -> tuple[Optional['Topic'], Optional['Topic']]:
     if selector.quit:
         return None, None
     return pTopic, selector.selected
+
+
+def selectNote(topic: 'Topic') -> Optional['Note']:
+    """Selects a note.
+    Selection of notes is based on topics. i.e. a topic will be selected first before notes in the topic will be selected.
+    parameters:
+    topic -> topic to start selection from.
+    returns:
+    - Note: Selected note
+    - None: no selected note, user canceled operation.
+    """
+    log.info("Selecting topic.")
+    pTopic, selectedTopic = selectTopic(topic)
+    if not selectedTopic:
+        return  # User canceled.
+    notes = selectedTopic.notes
+    log.debug(f"List of notes = {notes}")
+    selector = Selector([note.title for note in notes], notes)
+    selector.run()
+    return selector.selected

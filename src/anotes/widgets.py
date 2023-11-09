@@ -4,7 +4,7 @@ from logging import getLogger
 import urwid
 from typing import Optional, TYPE_CHECKING, Any
 if TYPE_CHECKING:
-    from database import Topic, Note
+    from .database import Topic, Note
 
 
 log = getLogger('widgets')

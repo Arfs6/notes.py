@@ -10,9 +10,12 @@ arfs6: I view the base topic as a shelf.
 
 import peewee as pw
 import datetime
+import os
+
+from .paths import getDataDir
 
 
-db = pw.SqliteDatabase('notes.py.db')
+db = pw.SqliteDatabase(os.path.join(getDataDir(), 'anotes.db'))
 
 
 class BaseModel(pw.Model):

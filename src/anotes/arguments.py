@@ -7,17 +7,22 @@ import argparse
 def getArgs():
     """Parses command line arguments and returns a Namespace"""
     parser = argparse.ArgumentParser(
-        prog='notes.py',
-        description='Notes manager',
+        prog="anotes",
+        description="Notes manager",
     )
 
-# Add the first positional argument
-    parser.add_argument('action', choices=['edit', 'create', 'topic'], help="Specify the action to perform")
+    subParser = parser.add_subparsers(dest="action")
+    subParser.add_parser("edit", help="Edit a note.")
+    subParser.add_parser("create", help="Create a new note")
+    subParser.add_parser("serve", help="Start server.")
+    topicParser = subParser.add_parser("topic", help="Create or Edit a topic.")
 
-    # add topic related arguments.
-    topicSubparsers = parser.add_subparsers(dest="topicAction", title="Topic Subcommands")
+    topicSubparsers = topicParser.add_subparsers(
+        dest="topicAction", title="Topic Subcommands", required=True, description="Topic actions"
+    )
     topicSubparsers.add_parser("create", help="Create a new topic")
     topicSubparsers.add_parser("edit", help="Edit an existing topic")
 
-# Parse the command-line arguments
-    return parser.parse_args()
+    # Parse the command-line arguments
+    args = parser.parse_args()
+    return args

@@ -1,2 +1,4 @@
 urwid
 peewee
+setuptools
+jinja2

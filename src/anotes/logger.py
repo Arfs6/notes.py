@@ -3,6 +3,8 @@ import os
 import sys
 import logging
 
+from .paths import getDataDir
+
 def setupLogging():
     """Set up logging"""
     logger = logging.getLogger()
@@ -17,7 +19,7 @@ def setupLogging():
     formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 
     # Create a file handler
-    logsDirectory = "logs"
+    logsDirectory = os.path.join(getDataDir(), "logs")
     os.makedirs(logsDirectory, exist_ok=True)
     logFile = os.path.join(logsDirectory, "notes.py.log")
     fileHandler = logging.FileHandler(logFile)

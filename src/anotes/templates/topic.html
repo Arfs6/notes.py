@@ -5,5 +5,31 @@
 {% endblock %}
 
 {% block content %}
+<h1>{{ topic.name }}</h1>
+	{% if not topic.isRoot %}
+<ul>
+	<li>Parent topic: <a href="{{ topic.parent.filePath }}">{{ topic.parent.name }}</a></li>
+</ul>
+	{% endif %}
 {{ content }}
+{% if not topic.isRoot %}
+<h2>Notes</h2>
+{% if topic.notes.count() %}
+<ul>
+	{% for note in topic.notes %}
+	<li><a href="{{ note.htmlFilePath }}">{{ note.title }}</a></li>
+	{% endfor %}
+</ul>
+{% else %}
+<p>No notes here yet.</p>
+{% endif %}
+{% endif %}
+{% if topic.children %}
+<h2>Sub Topics</h2>
+<ul>
+	{% for child in topic.children %}
+	<li><a href="{{ child.filePath }}">{{ child.name }}</a></li>
+	{% endfor %}
+	</ul>
+	{% endif %}
 {% endblock %}

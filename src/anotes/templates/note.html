@@ -1,9 +1,15 @@
 {% extends 'base.html' %}
 
 {% block title %}
-<title>{{ note.name }} | Abdulqadir's online notes</title>
+<title>{{ note.title }} | Abdulqadir's online notes</title>
 {% endblock %}
 
 {% block content %}
+<h1>{{ note.title }}</h1>
+<ul>
+	<li>Topic: <a href="{{ note.topic.filePath }}"></a></li>
+	<li>Created on {{ note.createdAt.strftime("%A %d %B %Y") }}</li>
+	<li>Updated on {{ note.updatedAt.strftime("%A %d %B %Y") }}</li>
+	</ul>
 {{ content }}
 {% endblock %}

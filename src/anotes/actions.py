@@ -6,6 +6,7 @@ import os
 from pathlib import Path
 
 from . import database as db
+from . import editting
 from . import utils
 from . import widgets
 from . import template
@@ -37,16 +38,8 @@ def editNote():
         return
     filePath = utils.getRawDirPath() + note.filePath
     log.debug(f"Resolved path for note ={filePath}")
-    utils.openFile(str(filePath))
-    converted = utils.convertRawFile(str(filePath), "note.html", note=note)
-    exportsPath = Path(os.path.join(utils.getHTMLDir(), note.filePath[1:]))
-    exportsPath = exportsPath.with_suffix(".html")
-    try:
-        os.makedirs(os.path.dirname(exportsPath))
-    except FileExistsError:
-        pass
-    with open(exportsPath, "w") as fileObj:
-        fileObj.write(converted)
+    editting.editFile(str(filePath), note)
+    note.update()
 
 
 def createTopic():
@@ -60,12 +53,7 @@ def createTopic():
     parentTopic, selectedTopic = widgets.selectTopic(baseTopic)
     if not parentTopic:
         return
-    topic: db.Topic = utils.createTopic(parentTopic)
-    output = template.render("topic.html", content="", topic=topic)
-    exportsPath = Path(os.path.join(utils.getHTMLDir(), topic.filePath[1:], "index.html"))
-    os.makedirs(os.path.dirname(exportsPath), exist_ok=True)
-    with open(exportsPath, 'w') as fileObj:
-        fileObj.write(output)
+    utils.createTopic(parentTopic)
 
 
 def editTopic():
@@ -82,14 +70,5 @@ def editTopic():
     filePath = os.path.join(
         utils.getRawDirPath(), selectedTopic.filePath[1:], "index.md"
     )
-    utils.openFile(str(filePath))
-    converted = utils.convertRawFile(str(filePath), "topic.html", topic=selectedTopic)
-    exportsPath = os.path.join(
-        utils.getHTMLDir(), selectedTopic.filePath[1:], "index.html"
-    )
-    try:
-        os.makedirs(os.path.dirname(exportsPath))
-    except FileExistsError:
-        pass
-    with open(exportsPath, "w") as fileObj:
-        fileObj.write(converted)
+    editting.editFile(str(filePath), selectedTopic)
+    selectedTopic.update()

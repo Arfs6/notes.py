@@ -15,6 +15,7 @@ INSTALL_REQUIRES = [
         'urwid',
         'peewee',
         'setuptools',
+    'jinja2',
         ]
 
 

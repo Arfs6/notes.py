@@ -44,3 +44,10 @@ def getConfigDir() -> str:
             print("".join(msg))
             path = os.path.dirname(__file__)
     return path
+
+
+def getLogDir():
+    """Returns a directory to store temporary files."""
+    path = '/var/log/anotes'
+    os.makedirs(path)
+    return path

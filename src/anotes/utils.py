@@ -29,7 +29,7 @@ def stripSpecialCharacters(string: str) -> str:
     cleanedString = re.sub(r"[^\w\- ]", "", string)
     cleanedString = cleanedString.replace(" ", "-")
     cleanedString = re.sub(r"[-]+", "-", cleanedString)
-    return cleanedString
+    return cleanedString.lower().strip()
 
 
 def promptUser(prompt: str) -> Optional[str]:
@@ -56,16 +56,7 @@ def createTopic(parentTopic: Topic) -> Topic:
     newTopicName = promptUser("Enter topic name. Type ctrl+c to cancel: ")
     if not newTopicName:
         return
-    newTopicFilePath = os.path.join(
-        parentTopic.filePath, stripSpecialCharacters(newTopicName)
-    )
-    newTopic = Topic(
-        filePath=newTopicFilePath, name=newTopicName, parent=parentTopic.id
-    )
-    relPath = newTopicFilePath[1:]
-    os.makedirs(os.path.join(getRawDirPath(), relPath), exist_ok=True)
-    newTopic.save()
-    return newTopic
+    return Topic.create(name=newTopicName, parent=parentTopic)
 
 
 def getRawDirPath() -> str:
@@ -82,51 +73,3 @@ def getHTMLDir() -> str:
     if not os.path.exists(path):
         os.makedirs(path)
     return path
-
-
-def openFile(path: str):
-    """Opens the specified file in a text editor.
-    parameters:
-    - path: path to file.
-    """
-    run([config.editor, path])
-
-
-def createNote(topic: Topic):
-    """Creates a new note.
-    parameters:
-    - topic: Topic the note belongs to.
-    """
-    log.info("Creating a new topic...")
-    noteName = promptUser("Enter note name. Type ctrl+c to cancel: ")
-    if not noteName:
-        return
-    ext = promptUser(
-        "Which type of note is this? e.g. tex for latex. Type ctrl+c to cancel: "
-    )
-    if not ext:
-        return
-    note = Note()
-    filePath = Path(topic.filePath) / Path(stripSpecialCharacters(noteName))
-    note.filePath = str(filePath.with_suffix("." + ext))
-    # todo: Make sure filePath is truely unique or the above code will raise an exception.
-    note.title = noteName
-    note.topic = topic.id
-    note.save()
-
-
-def convertRawFile(path: str, template_name: str, **kwargs) -> str:
-    """Converts a note to HTML."""
-    rawFilePath = Path(path)
-    with open(rawFilePath) as rawFile:
-        raw = rawFile.read()
-    match rawFilePath.suffix:
-        case ".md":
-            export = converter.md2HTML(raw)
-        case ".tex":
-            export = converter.tex2HTML(raw)
-        case _:
-            export = raw
-
-            print(f"kwargs = {kwargs}")
-    return template.render(template_name, content=export, **kwargs)

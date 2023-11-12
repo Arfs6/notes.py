@@ -1,25 +1,41 @@
-# notes.py  
+# Anotes  
 
-Notes.py is a utility that aims to reduce the friction in writing notes on laptop, especially when the filetypes might be different.  
+Anotes is a utility that aims to reduce the friction in writing notes on laptop, especially when the filetypes might be different.  
 
-The process of writing a note with notes.py should be:  
+I have some crazy ideas, like searching for notes, managing notes referencing, adding extensibility and perhaps a GUI. Let's see where this project is going to be in ... 2 years. Starting from Sunday 12th November 2023.  
 
-- Type `notes.py create` in your command line.  
-- Select a topic this note is based on.  
-- Give the note a title (name).  
-- Optionally supply the filetype of the note, defaults to markdown.  
-- Begin editing your note with your favourite text editor.  
-- Save the file and exit your text editor.  
-- notes.py will then compile your notes into the format you specified in your configuration file, defaults to html.
-- Additionally, you can supply the `-q` argument to create a quick note and edit / move it later.  
+## Quick Start  
 
-Notes.py is going to take care of creating the files for you to write your notes in, compiling the files and optionally updating it.  
+You need `python` and `pandoc` to be able to run anotes. I built it using `python3.12`, but I think it should work with `python` versions up to 3.10.  
 
-I have some crazy ideas, like searching for notes, managing notes referencing, adding extensibility and perhaps a GUI. Let's see where this project is going to be in ... 2 years.  
+You can get python at the official python download page: <https://www.python.org/downloads/>.  
 
-## Stage  
+I use `pandoc` to convert the files to `HTML`. For example, `.tex` get converted to a `HTML` file. You can get `pandoc` at the official installation page: <https://pandoc.org/installing.html>.  
 
-notes.py is currently on alpha stage, and most features haven't been implemented yet.  
+### Installation  
+
+Install anotes via pip:  
+
+```bash
+python -m pip install git+https://github.com/arfs6/anotes
+```
+
+This will get anotes from this github repo and install it.  
+
+### Commands  
+
+- `anotes topic create`: Create a new topic.
+- `anotes topic edit`: Edit the index page of a topic.
+- `anotes create`: Create a new topic.
+- `anotes edit`: edit an existing note.
+
+## Features  
+
+At this point, anotes supports writing markdown (`.md`) and `LaTeX` (`.tex`) notes. When you open a file for editing using anotes, it starts a local server at port 7777 and serve all your notes. Further more, anotes detect when you save your file and automatically re-compiles it. This means, when you save the file and refresh your browser, you'll get the latest version of the file.  
+
+## Status  
+
+anotes is currently on alpha stage, and most features haven't been implemented yet.  
 
 ## Todo  
 

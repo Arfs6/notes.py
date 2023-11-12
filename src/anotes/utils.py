@@ -3,17 +3,12 @@
 
 from logging import getLogger
 import os
-from pathlib import Path
 import re
-import sys
-from subprocess import run
 from typing import Optional
 
-from .paths import getDataDir
-from . import converter
-from .database import Topic, Note
 from . import config
-from . import template
+from .database import Note, Topic
+from .paths import getDataDir
 
 
 log = getLogger("utils")
@@ -73,3 +68,20 @@ def getHTMLDir() -> str:
     if not os.path.exists(path):
         os.makedirs(path)
     return path
+
+
+def createNote(topic: Topic):
+    """Creates a new note.
+    parameters:
+    - topic: Topic the note belongs to.
+    """
+    log.info("Creating a new topic...")
+    noteTitle = promptUser("Enter note name. Type ctrl+c to cancel: ")
+    if not noteTitle:
+        return
+    ext = promptUser(
+        "Which type of note is this? e.g. tex for latex. Type ctrl+c to cancel: "
+    )
+    if not ext:
+        ext = "md"
+    note = Note.create(noteTitle, ext, topic)

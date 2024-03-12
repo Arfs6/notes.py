@@ -48,14 +48,5 @@ class Container:
 def setup():
     """make `import init` to import user init script."""
     log.info("Setting up init script.")
-    if os.getenv('ANOTES_ENV') == 'env':
-        # running in dev mode.
-        # init script is expected to be in the root of the package.
-        # so import init should work.
-        log.info("Expecting config at package root.")
-        return
-
     path = getConfigDir()
-    if not path:
-        return
     sys.path.insert(1, path)

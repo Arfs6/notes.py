@@ -164,3 +164,4 @@ src/anotes/outputs
 anotes.db
 src/anotes/todo
 src/anotes/sudo
+src/anotes/data

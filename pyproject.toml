@@ -30,3 +30,5 @@ path = "src/anotes/__init__.py"
 include = [
     "/src",
 ]
+	[tool.hatch.envs.default.env-vars]
+ANOTES_ENV="development"

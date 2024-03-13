@@ -1,4 +1,4 @@
-# -*- coding: utf -8 -*-
+# -*- coding: utf-8 -*-
 """This models contains functions that get executed based on command line arguments"""
 
 from logging import getLogger
@@ -15,21 +15,25 @@ from . import template
 log = getLogger("actions")
 
 
-def createNote():
+def createNote(argst):
     """Creates a new note."""
     log.info("Creating new note...")
     baseTopic = db.Topic.get(db.Topic.id == 1)
-    if not baseTopic:
-        # todo: ask user if he / she wants to create a topic.
-        print("No topics yet.")
+    if not baseTopic.children:
+        ans = utils.promptUser("No topics yet. Do you want to create one [Yes|No]? ")
+        if ans is not None and ans.lower() not in ["y", "yes"]:
+            print("Can't create a note without topic, Aborted.")
+            return
+        else:
+            utils.createTopic(baseTopic)
 
-    pTopic, selectedTopic = widgets.selectTopic(baseTopic)
+    selectedTopic = widgets.selectTopic(baseTopic)[1]  # Ignore parent topic
     if not selectedTopic:
         return
     utils.createNote(selectedTopic)
 
 
-def editNote():
+def editNote(argst):
     """Edit an existing note."""
     log.info("Editing note...")
     baseTopic = db.Topic.get(db.Topic.id == 1)
@@ -42,11 +46,11 @@ def editNote():
     note.update()
 
 
-def createTopic():
+def createTopic(argst):
     """Creates a new topic."""
     log.info("Creating new topic...")
     baseTopic = db.Topic.get(db.Topic.id == 1)
-    if not baseTopic.children:  # No root topics, created em!
+    if not baseTopic.children:
         print("You don't have any topics yet.")
         utils.createTopic(baseTopic)
         return
@@ -56,7 +60,7 @@ def createTopic():
     utils.createTopic(parentTopic)
 
 
-def editTopic():
+def editTopic(argst):
     """Edit an existing topic."""
     log.info("Editing topic...")
     baseTopic = db.Topic.get(db.Topic.id == 1)

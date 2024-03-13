@@ -35,23 +35,26 @@ def promptUser(prompt: str) -> Optional[str]:
     - str: string the user entered,
     - None: user canceled prompt.
     """
-    log.info("Prompting the user for topic name.")
+    log.info(f"Prompting the user. Propt = {prompt}")
     try:
-        newTopicName = input(prompt)
+        ans = input(prompt)
     except KeyboardInterrupt:
-        log.info(f"User canceled prompt.")
+        log.debug(f"User canceled prompt.")
         return
     else:
-        return newTopicName
+        log.debug(f"User typed: <{ans}>")
+        return ans
 
 
-def createTopic(parentTopic: Topic) -> Topic:
+def createTopic(parentTopic: Topic) -> Topic | None:
     """Creates a new topic."""
     log.info("Creating a new topic...")
     newTopicName = promptUser("Enter topic name. Type ctrl+c to cancel: ")
     if not newTopicName:
         return
-    return Topic.create(name=newTopicName, parent=parentTopic)
+    newTopic = Topic.create(name=newTopicName, parent=parentTopic)
+    log.debug(f"Created new topic: <{newTopic}>")
+    return newTopic
 
 
 def getRawDirPath() -> str:
